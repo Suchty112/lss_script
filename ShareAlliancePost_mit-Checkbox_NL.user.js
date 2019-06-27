@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         ShareAlliancePost_mit-Checkbox_NL
+// @name         ShareAlliancePost_MELD
 // @namespace    Leitstellenspiel
-// @version      5.1a
-// @author       solarbridge (auf Basis von: x_Freya_x, jalibu (Original), JuMaHo (Original))
+// @version      5.0a
+// @author       x_Freya_x, jalibu (Original), JuMaHo (Original)
 // @include      https://www.meldkamerspel.com/missions/*
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -27,12 +27,7 @@
         DoMA += leapYear(vDateY) ? 1 : 0;
         let vDateHo = vT.getHours();
         let vDateMi = vT.getMinutes();
-if (vDateMi < 30) {
-            vDateMi = 30;
-        } else {
-            vDateMi = 0;
-            vDateHo = vDateHo + 1;
-        }
+
         let HoOs = vDateHo + Os;
         let ueTH = HoOs >= 24 ? 1 : 0;
         HoOs -= ueTH ? 24 : 0;
@@ -56,7 +51,6 @@ if (vDateMi < 30) {
         let vMi = '';
         vMi += vDateMi < 10 ? '0' + vDateMi : '' + vDateMi;
 
-
         if (dY) {
             vD += '.' + vM + '.' + vY + ' / ' + vHo + ':' + vMi +' Uhr';
         } else {
@@ -69,53 +63,51 @@ if (vDateMi < 30) {
     const jumpNext = true; // Set to 'true', to jump to next mission after submitting an alert.
     const enableKeyboard = false; // Set to 'false', to disable keyboard shortcuts.
     const shortcutKeys = [17, 89]; // 17 = ctrl, 68 = d
-    const defaultPostToChat = false; // Set to 'false', to disable default post in alliance chat.
+    const defaultPostToChat = true; // Set to 'false', to disable default post in alliance chat.
     const displayYear = false;
     const displayESZ = true;
     const useMessageStorage = false;
     var Messages = [];
-    const defaultMessages = ['Frei - %CRE%',
-                      //'[EVENT] %ESZ% - Hat offen zu bleiben bis %MY_CUSTOM_TIME3% !!!',
-                      //'%ADDRESS% - %FRE0%',
-                      //'%ESZ% - %ADDRESS% - %FRE%',
-                      //'%ESZ% - %ADDRESS% - %CRE% - Regeln !!!', // Default
-                      'Keine ELW / FüKw/PHS/GefKw vor %MY_CUSTOM_TIME1% - %CRE%',
-                      'Keine ELW / FüKw/PHS/GefKw vor %MY_CUSTOM_TIME3% - %CRE%',
-                      'Keine ELW / FüKw/PHS/GefKw vor %MY_CUSTOM_TIME5% - %CRE%',
-                      'RD nur durch mich - Rest frei - %CRE%',
-                      'RD nur durch mich - Keine ELW1/ELW2 / FüKw/PHS/GefKw vor %MY_CUSTOM_TIME3% - %CRE%',
-                      //'%ESZ% - %ADDRESS% - %CRE% - RD NUR durch mich - Regeln !!!',
-                      //'%ESZ% - %ADDRESS% - %CRE% - RD frei - Regeln !!!',
+    const defaultMessages = ['%ESZ% - %ADDRESS% - %CRE% - Regeln !!!',
+                      '[EVENT] %ESZ% - Hat offen zu bleiben bis %MY_CUSTOM_TIME3% !!!',
+                      '%ADDRESS% - %FRE0%',
+                      '%ESZ% - %ADDRESS% - %FRE%',
+                      '%ESZ% - %ADDRESS% - %CRE% - Regeln !!!', // Default
+                      '%ESZ% - kein ELW 1 + ELW 2 vor %MY_CUSTOM_TIME5%',
+                      '%ESZ% - %ADDRESS% - %CRE% - RD NUR durch mich - Regeln !!!',
+                      '%ESZ% - %ADDRESS% - %CRE% - RD frei - Regeln !!!',
                       // '%ESZ% - Offen bis %MY_CUSTOM_TIME%. RD NUR durch mich - alles gemäß Regeln !!!',
                       // '%ESZ% - Unterstützung in %ADDRESS% benötigt. Offen bis %MY_CUSTOM_TIME%.',
-                      //'%ADDRESS%: Weitere Kräfte in %ADDRESS% benötigt.',
-                      '%ADDRESS%: RD für %PATIENTS_LEFT% Patienten benötigt.'];
-                      //'EILT !!! RTH in %ADDRESS% benötigt.',
-                      //'EILT !!! Hummel in %ADDRESS% benötigt.',
-                      //'%ADDRESS%: %REQUIRED_VEHICLES% Vielen Dank! - %CRE%'];
+                      'EILT !!! Weitere Kräfte in %ADDRESS% benötigt.',
+                      'RD für %PATIENTS_LEFT% Patienten in %ADDRESS% benötigt.',
+                      'EILT !!! RTH in %CITY% benötigt.',
+                      'EILT !!! Hummel in %ADDRESS% benötigt.',
+                      // '%REQUIRED_VEHICLES% in %ADDRESS% noch benötigt',
                       // 'EILT !!! %REQUIRED_VEHICLES% in %ADDRESS% noch benötigt'];
-                      //'+++ Gesponsorte GSL --- kein ELW 2 vor %MY_CUSTOM_TIME5% !!!'];
+                      '+++ Gesponsorte GSL --- kein ELW 2 vor %MY_CUSTOM_TIME5% !!!'];
     const addMessages = []; // Messages to add to storage
 
     // Create Button and add event listener
     const initButtons = () => {
         let btnMarkup1 = '<div class="btn-group" style="margin-left: 5px; margin-right: 5px;">';
-        btnMarkup1 += '<a href="#" class="btn btn-success  btn-sm btn-icon-holder alert_notify_alliance2_br" style="color:#ffffff;" title="Alarmieren, im Verband freigeben und Nachricht in Verbands-Chat">';
+        btnMarkup1 += '<a href="#" class="btn btn-sm alert_notify_alliance2_br" style="color:#ffffff; background-color:#ff0000; background:#e08484" title="Alarmieren, im Verband freigeben und Nachricht in Verbands-Chat">';
         btnMarkup1 += '<img class="icon icons8-Phone-Filled" src="/images/icons8-phone_filled.svg" width="18" height="18">';
         btnMarkup1 += '<img class="icon icons8-Share" src="/images/icons8-share.svg" width="20" height="20">';
         btnMarkup1 += '<span class="glyphicon glyphicon-bullhorn" style="font-size: 13px;"></span>';
+        btnMarkup1 += '<span class="glyphicon glyphicon-bullhorn" style="font-size: 13px;"></span>';
         btnMarkup1 += '</a></div>';
         let btnMarkup2 = '<div class="btn-group" style="margin-left: 5px; margin-right: 5px;">';
-        btnMarkup2 += '<a href="#" class="btn btn-success  btn-sm btn-icon-holder alert_notify_alliance2_bl" style="color:#ffffff;" title="Alarmieren, im Verband freigeben und Nachricht in Verbands-Chat">';
+        btnMarkup2 += '<a href="#" class="btn btn-sm alert_notify_alliance2_bl" style="color:#ffffff; background-color:#ff0000; background:#e08484" title="Alarmieren, im Verband freigeben und Nachricht in Verbands-Chat">';
         btnMarkup2 += '<img class="icon icons8-Phone-Filled" src="/images/icons8-phone_filled.svg" width="18" height="18">';
         btnMarkup2 += '<img class="icon icons8-Share" src="/images/icons8-share.svg" width="20" height="20">';
+        btnMarkup2 += '<span class="glyphicon glyphicon-bullhorn" style="font-size: 13px;"></span>';
         btnMarkup2 += '<span class="glyphicon glyphicon-bullhorn" style="font-size: 13px;"></span>';
         btnMarkup2 += '</a></div>';
 
         let optionsBtnMarkup1 = '<a href="#" id="openAllianceShareOptions2_br" class="btn btn-sm btn-default" title="Einstellungen" style="margin: 0">';
         optionsBtnMarkup1 += '<span class="glyphicon glyphicon-option-horizontal"></span></a>';
         optionsBtnMarkup1 += '<div class="btn btn-sm btn-default" style="margin:0; padding: 1px; display: none;" id="allianceShareOptions2_br"><input type="text" id="allianceShareText2_br" value="' + Messages[0] + '" size="80">';
-        optionsBtnMarkup1 += '<label id="dptc2_br" style="margin-left: 2px; margin-right: 2px; display: inline;"><input type="checkbox" ' + (defaultPostToChat ? 'checked' : '') + ' id="postToChat_br" name="postToChat_br" value="true">An VB Chat?</label>';
+        optionsBtnMarkup1 += '<label id="dptc2_br" style="margin-left: 2px; margin-right: 2px;"><input type="checkbox" ' + (defaultPostToChat ? 'checked' : '') + ' id="postToChat" name="postToChat" value="true">An VB Chat?</label>';
         optionsBtnMarkup1 += '<div style="text-align: left;"><ul>';
         $.each(Messages, (index, msg) => {
             optionsBtnMarkup1 += '<li class="customAllianceShareText2_br">' + msg + '</li>';
@@ -125,7 +117,7 @@ if (vDateMi < 30) {
         let optionsBtnMarkup2 = '<a href="#" id="openAllianceShareOptions2_bl" class="btn btn-sm btn-default" title="Einstellungen" style="margin: 0">';
         optionsBtnMarkup2 += '<span class="glyphicon glyphicon-option-horizontal"></span></a>';
         optionsBtnMarkup2 += '<div class="btn btn-sm btn-default" style="margin:0; padding: 1px; display: none;" id="allianceShareOptions2_bl"><input type="text" id="allianceShareText2_bl" value="' + Messages[0] + '" size="80">';
-        optionsBtnMarkup2 += '<label id="dptc2_bl" style="margin-left: 2px; margin-right: 2px; display: inline"><input type="checkbox" ' + (defaultPostToChat ? 'checked' : '') + ' id="postToChat_bl" name="postToChat_bl" value="true">An VB Chat?</label>';
+        optionsBtnMarkup2 += '<label id="dptc2_bl" style="margin-left: 2px; margin-right: 2px;"><input type="checkbox" ' + (defaultPostToChat ? 'checked' : '') + ' id="postToChat" name="postToChat" value="true">An VB Chat?</label>';
         optionsBtnMarkup2 += '<div style="text-align: left;"><ul>';
         $.each(Messages, (index, msg) => {
             optionsBtnMarkup2 += '<li class="customAllianceShareText2_bl">' + msg + '</li>';
@@ -143,8 +135,8 @@ if (vDateMi < 30) {
 
         $('.alert_notify_alliance2_br').first().parent().prepend(optionsBtnMarkup1);
         $('.alert_notify_alliance2_bl').first().parent().prepend(optionsBtnMarkup2);
-        //$('#dptc2_bl').css('display', 'none');
-        //$('#dptc2_br').css('display', 'none');
+        $('#dptc2_bl').css('display', 'none');
+        $('#dptc2_br').css('display', 'none');
 
         $('#openAllianceShareOptions2_br').click(() => {
             $('#allianceShareOptions2_br').show();
@@ -244,7 +236,7 @@ if (vDateMi < 30) {
 
         $('#openAllianceShareOptions2_br').show();
 
-        const sendToAlliance = $('#postToChat_br').is(':checked') ? 1 : 0;
+        const sendToAlliance = $('#postToChat').is(':checked') ? 1 : 0;
         const missionShareLink = $('#mission_alliance_share_btn').attr('href');
         const missionId = missionShareLink.replace('/missions/','').replace('/alliance', '');
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -253,7 +245,7 @@ if (vDateMi < 30) {
         $('.alert_notify_alliance2_br').html('Teilen..');
         $.get('/missions/' + missionId + '/alliance' , () => {
             $('.alert_notify_alliance2_br').html('Chatten..');
-            $.post( "/mission_replies", {authenticity_token: csrfToken, mission_reply: {alliance_chat: sendToAlliance, content: message, mission_id: missionId}}, (data, status, xhr) => {
+            $.post( "/mission_replies", {authenticity_token: csrfToken, mission_reply: {alliance_chat: 1, content: message, mission_id: missionId}}, (data, status, xhr) => {
                 $('.alert_notify_alliance2_br').html('Alarmieren..');
                 if(jumpNext){
                     $('.alert_next').first().click();
@@ -277,7 +269,7 @@ if (vDateMi < 30) {
 
         $('#openAllianceShareOptions2_bl').show();
 
-        const sendToAlliance = $('#postToChat_bl').is(':checked') ? 1 : 0;
+        const sendToAlliance = $('#postToChat').is(':checked') ? 1 : 0;
         const missionShareLink = $('#mission_alliance_share_btn').attr('href');
         const missionId = missionShareLink.replace('/missions/','').replace('/alliance', '');
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -286,7 +278,7 @@ if (vDateMi < 30) {
         $('.alert_notify_alliance2_bl').html('Teilen..');
         $.get('/missions/' + missionId + '/alliance' , () => {
             $('.alert_notify_alliance2_bl').html('Chatten..');
-            $.post( "/mission_replies", {authenticity_token: csrfToken, mission_reply: {alliance_chat: sendToAlliance, content: message, mission_id: missionId}}, (data, status, xhr) => {
+            $.post( "/mission_replies", {authenticity_token: csrfToken, mission_reply: {alliance_chat: 1, content: message, mission_id: missionId}}, (data, status, xhr) => {
                 $('.alert_notify_alliance2_bl').html('Alarmieren..');
                 if(jumpNext){
                     $('.alert_next').first().click();
@@ -317,21 +309,14 @@ if (vDateMi < 30) {
                 const m_id2 = parseInt(m_id2_s);
                 creds = m_id2;
             }
-/*var testcreds = "undefined";
-    //GET Data from Jan's API
-    $.getJSON(`https://lssm.ledbrain.de/api/missions.php?mission=${m_id}`, function(data) {
-
-        testcreds = data.credits;
-
-    });
-*/
-            cstr = 'ca. ' + creds + ' Credits';
+            cstr = '' + creds + '€';
             // Prepare values for %ADDRESS% and %PATIENTS_LEFT%
             // Possible inputs 'xy street, 1234 city', '1234 city', '123 city | 2' (where 2 is number of patients)
             let addressAndPatrientRow = $('.mission_header_info >> small').first().text().trim().split(',');
             addressAndPatrientRow = addressAndPatrientRow[addressAndPatrientRow.length-1].split('|');
             const adr = addressAndPatrientRow[0];
-            let address = adr.slice(0, 6);
+            let address = adr.slice(0, 7);
+            let ort = adr.substring(7);
             const patientsLeft = addressAndPatrientRow.length === 2 ? addressAndPatrientRow[1] : 0;
 
             const aDate = new Date();
@@ -343,8 +328,6 @@ if (vDateMi < 30) {
             const MCT3 = OffTime(aDate, 3);
             // Prepare values for %MY_CUSTOM_TIME6%
             const MCT6 = OffTime(aDate, 6);
-            // Prepare values for %MY_CUSTOM_TIME1%
-            const MCT1 = OffTime(aDate, 1);
 
             // Prepare required Vehicles
             const alertText = $('.alert-danger');
@@ -358,7 +341,8 @@ if (vDateMi < 30) {
                 if (!(displayESZ)) {
                     Messages[i] = Messages[i].replace('%ESZ% - ', '');
                 }
-                Messages[i] = Messages[i].replace('%ADDRESS%', address);
+                Messages[i] = Messages[i].replace('%ADDRESS%', 'PLZ: ' + address);
+                Messages[i] = Messages[i].replace('%CITY%', ort);
                 Messages[i] = Messages[i].replace('%PATIENTS_LEFT%', patientsLeft);
                 Messages[i] = Messages[i].replace('%REQUIRED_VEHICLES%', requiredVehicles);
                 Messages[i] = Messages[i].replace('%ESZ%', 'ESZ: ' + AD);
@@ -373,7 +357,6 @@ if (vDateMi < 30) {
                 Messages[i] = Messages[i].replace('%MY_CUSTOM_TIME5%', MCT5);
                 Messages[i] = Messages[i].replace('%MY_CUSTOM_TIME3%', MCT3);
                 Messages[i] = Messages[i].replace('%MY_CUSTOM_TIME6%', MCT6);
-                Messages[i] = Messages[i].replace('%MY_CUSTOM_TIME1%', MCT1);
             }
         } catch (e){
             console.log('Error transforming messages: ' + e);
